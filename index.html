@@ -2,170 +2,199 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>阅卷分配 · 登记系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>阅卷分配 · 教研组填报系统</title>
     <style>
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
         body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            background: #f0f7ff;
-            margin: 0;
-            padding: 20px;
-            color: #1f2d3d;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f7fb;
+            padding: 16px;
+            padding-bottom: 40px;
+            color: #1e293b;
         }
         .container {
-            max-width: 1200px;
+            max-width: 550px;
             margin: 0 auto;
         }
+        /* 卡片 */
         .card {
             background: white;
-            border-radius: 24px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            padding: 24px 28px;
-            margin-bottom: 32px;
-        }
-        h1 {
-            font-size: 1.8rem;
-            color: #1e466e;
-            margin: 0 0 8px 0;
-        }
-        .sub {
-            color: #4a6f8f;
-            border-left: 4px solid #2c7da0;
-            padding-left: 16px;
-            margin: 12px 0 0 0;
-        }
-        .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
+            border-radius: 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04), 0 4px 8px rgba(0,0,0,0.02);
+            padding: 20px;
             margin-bottom: 20px;
         }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #0f3b5c;
+            margin-bottom: 4px;
+        }
+        .sub {
+            font-size: 0.75rem;
+            color: #5b6e8c;
+            border-left: 3px solid #2c7da0;
+            padding-left: 12px;
+            margin: 8px 0 0;
+        }
+        /* 表单 */
         .form-group {
-            flex: 1;
-            min-width: 140px;
+            margin-bottom: 18px;
         }
         label {
+            font-size: 0.75rem;
             font-weight: 600;
-            color: #1e466e;
+            color: #2c5a7a;
             display: block;
             margin-bottom: 6px;
-            font-size: 0.85rem;
         }
-        select, input, textarea {
+        select, input {
             width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #cbdde6;
-            border-radius: 16px;
+            padding: 14px 16px;
             font-size: 1rem;
+            border: 1px solid #dce3ec;
+            border-radius: 20px;
             background: white;
+            font-family: inherit;
         }
-        select, input:focus, textarea:focus {
+        select:focus, input:focus {
             outline: none;
             border-color: #2c7da0;
+            box-shadow: 0 0 0 3px rgba(44,125,160,0.1);
         }
         button {
             background: #2c7da0;
             color: white;
             border: none;
-            padding: 12px 28px;
+            padding: 14px 20px;
             border-radius: 40px;
-            font-weight: bold;
+            font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
+            width: 100%;
+            transition: 0.2s;
         }
-        button:hover {
-            background: #1f5e7a;
+        button:active {
+            transform: scale(0.98);
         }
-        .btn-primary {
-            background: #1e6f5c;
+        /* 表格 */
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 8px;
         }
-        .btn-primary:hover {
-            background: #0f5a4a;
+        .status-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
         }
-        .btn-add {
-            background: #4a6f8f;
+        .status-table th {
+            background: #eef3fc;
+            padding: 10px 6px;
+            text-align: center;
+            font-weight: 600;
+            color: #2c5a7a;
+            position: sticky;
+            top: 0;
         }
-        .record-item {
-            background: #f8fbfe;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-left: 4px solid #2c7da0;
+        .status-table td {
+            padding: 8px 4px;
+            text-align: center;
+            border-bottom: 1px solid #e9edf2;
         }
-        .record-header {
+        .grade-col {
+            font-weight: 600;
+            background-color: #fafcff;
+        }
+        .submitted {
+            background-color: #e6f7e6;
+            color: #2b6e3b;
+            border-radius: 20px;
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+        }
+        .not-submitted {
+            background-color: #fff0e6;
+            color: #c55a1a;
+            border-radius: 20px;
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+        }
+        /* 弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 32px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80%;
+            overflow: auto;
+            padding: 20px;
+            position: relative;
+        }
+        .modal-header {
             display: flex;
             justify-content: space-between;
-            color: #4a6f8f;
-            font-size: 0.75rem;
-            margin-bottom: 8px;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e9edf2;
         }
-        .record-content {
-            font-size: 0.9rem;
+        .modal-header h3 {
+            font-size: 1.2rem;
+            color: #0f3b5c;
         }
-        .record-content strong {
-            color: #1e466e;
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #8ba0bc;
+            width: auto;
+            padding: 0;
         }
-        .message {
-            margin-top: 16px;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
+        .close-btn:active {
+            transform: none;
         }
-        .message.success {
-            background: #dff0e6;
-            color: #2b6e3b;
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            z-index: 1100;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-        .message.error {
-            background: #ffe2dd;
-            color: #bc3900;
-        }
-        .message.loading {
-            background: #e9f2f9;
-            color: #1e466e;
-        }
-        .filter-bar {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .filter-group {
-            flex: 1;
-            min-width: 120px;
-        }
-        .filter-group label {
-            font-size: 0.75rem;
-            margin-bottom: 4px;
-        }
-        .batch-panel {
-            background: #e9f2f9;
-            border-radius: 20px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-        .batch-row {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-            align-items: flex-end;
-        }
-        .batch-row .form-group {
-            margin-bottom: 0;
-        }
-        .batch-rows-container {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        @media (max-width: 700px) {
-            .card {
-                padding: 16px;
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
             }
-            .batch-row {
-                flex-direction: column;
+            .status-table th, .status-table td {
+                font-size: 0.7rem;
+                padding: 6px 3px;
             }
         }
     </style>
@@ -173,405 +202,292 @@
 <body>
 <div class="container">
     <div class="card">
-        <h1>📋 阅卷分配 · 登记系统</h1>
-        <div class="sub">组长填写各年级科目的分配情况，提交后自动保存到 GitHub，所有人实时可见</div>
+        <h1>📋 阅卷分配</h1>
+        <div class="sub">组长填写各年级科目分配情况</div>
     </div>
 
+    <!-- 填写表单 -->
     <div class="card">
-        <div class="batch-panel">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h3 style="margin:0;">📝 批量填写</h3>
-                <button id="addBatchRowBtn" class="btn-add" style="padding: 6px 16px;">➕ 添加一行</button>
-            </div>
-            <div id="batchRowsContainer" class="batch-rows-container">
-                <!-- 动态添加的行会出现在这里 -->
-            </div>
-            <div style="margin-top: 20px; text-align: right;">
-                <button id="compareBtn" class="btn-outline" style="background: white; color: #2c7da0; border: 1px solid #2c7da0; margin-right: 12px;">🔍 查看本次修改对比</button>
-                <button id="batchSubmitBtn" class="btn-primary">📤 批量提交</button>
-            </div>
+        <h3 style="margin-bottom: 16px; font-size: 1.1rem;">✏️ 填写分配</h3>
+        <div class="form-group">
+            <label>📌 年级</label>
+            <select id="gradeSelect">
+                <option value="">请选择年级</option>
+                <option value="七年级">七年级</option>
+                <option value="八年级">八年级</option>
+                <option value="九年级">九年级</option>
+                <option value="高一">高一</option>
+                <option value="高二">高二</option>
+                <option value="高三">高三</option>
+            </select>
         </div>
+        <div class="form-group">
+            <label>📚 科目</label>
+            <select id="subjectSelect" disabled>
+                <option value="">请先选择年级</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>📝 分配情况</label>
+            <input type="text" id="assignmentText" placeholder="例：已分配给张老师 / 待定 / 由李老师负责" autocomplete="off">
+        </div>
+        <button id="submitBtn">✅ 提交</button>
+    </div>
 
-        <div class="filter-bar">
-            <div class="filter-group">
-                <label>📌 年级筛选</label>
-                <select id="filterGrade"><option value="">全部</option><option>七年级</option><option>八年级</option><option>九年级</option><option>高一</option><option>高二</option><option>高三</option></select>
-            </div>
-            <div class="filter-group">
-                <label>✅ 状态筛选</label>
-                <select id="filterStatus"><option value="">全部</option><option>已分配</option><option>未分配</option></select>
-            </div>
-            <div class="filter-group">
-                <label>📚 科目搜索</label>
-                <input type="text" id="filterSubject" placeholder="输入科目关键词">
-            </div>
+    <!-- 状态表格 -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="font-size: 1rem;">📊 各科目提交状态</h3>
+            <button id="viewTableBtn" style="width: auto; padding: 6px 14px; font-size: 0.7rem; background: #5b8cae;">查看完整表格</button>
         </div>
+        <div class="table-wrapper" id="tableWrapper">
+            <!-- 表格会动态渲染 -->
+        </div>
+    </div>
+</div>
 
-        <div id="recordsList" style="max-height: 500px; overflow-y: auto;">
-            <div style="text-align: center; padding: 40px; color: #4a6f8f;">加载中...</div>
+<!-- 弹窗表格 -->
+<div id="statusModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📋 全部科目提交状态</h3>
+            <button class="close-btn" id="closeModalBtn">&times;</button>
         </div>
-        <div id="messageArea" class="message"></div>
+        <div id="modalTableBody"></div>
     </div>
 </div>
 
 <script>
-    // ==================== ⚠️ 请修改以下三个配置 ⚠️ ====================
-const GITHUB_TOKEN = "GITHUB_TOKEN_PLACEHOLDER";    
-const GITHUB_USER = "tardis923";                  // 你的 GitHub 用户名
-    const GITHUB_REPO = "yuejuan";                    // 你的仓库名
-    // =================================================================
+    // ==================== 配置区域 ====================
+    const GITHUB_TOKEN = "GITHUB_TOKEN_PLACEHOLDER";  // 部署时自动替换
+    const GITHUB_USER = "tardis923";
+    const GITHUB_REPO = "yuejuan";
+    // =================================================
 
-    // 年级和科目预设
-    const gradeOptions = ["七年级", "八年级", "九年级", "高一", "高二", "高三"];
-    const subjectPresets = ["语文", "数学", "英语", "物理", "化学", "生物", "历史", "地理", "政治"];
+    // 年级与科目配置（按年级增减）
+    const subjectConfig = {
+        "七年级": ["语文", "数学", "英语", "道德与法治", "历史", "地理", "生物", "体育", "美术"],
+        "八年级": ["语文", "数学", "英语", "物理", "道德与法治", "历史", "地理", "生物", "体育"],
+        "九年级": ["语文", "数学", "英语", "物理", "化学", "道德与法治", "历史", "体育"],
+        "高一": ["语文", "数学", "英语", "物理", "化学", "生物", "历史", "地理", "政治"],
+        "高二": ["语文", "数学", "英语", "物理", "化学", "生物", "历史", "地理", "政治"],
+        "高三": ["语文", "数学", "英语", "物理", "化学", "生物", "历史", "地理", "政治"]
+    };
 
-    // 存储当前待提交的行
-    let batchRows = [];
-    let nextRowId = 1;
-    let existingRecords = []; // 存储已提交的记录（从GitHub Issues加载）
+    // 存储已提交的数据 { "七年级|语文": "已分配给张老师" }
+    let submittedData = {};
 
-    // 初始化时添加一行
-    function initBatchRows() {
-        batchRows = [{
-            id: nextRowId++,
-            grade: "",
-            subject: "",
-            status: "未分配",
-            teacher: "",
-            remark: ""
-        }];
-        renderBatchRows();
-    }
-
-    // 渲染批量填写行
-    function renderBatchRows() {
-        const container = document.getElementById("batchRowsContainer");
-        if (!container) return;
-        container.innerHTML = "";
-        for (let i = 0; i < batchRows.length; i++) {
-            const row = batchRows[i];
-            const div = document.createElement("div");
-            div.className = "batch-row";
-            div.style.borderBottom = i < batchRows.length - 1 ? "1px solid #e2edf2" : "none";
-            div.style.paddingBottom = i < batchRows.length - 1 ? "12px" : "0";
-            div.style.marginBottom = i < batchRows.length - 1 ? "12px" : "0";
-
-            // 年级选择
-            const gradeDiv = document.createElement("div");
-            gradeDiv.className = "form-group";
-            gradeDiv.style.minWidth = "120px";
-            gradeDiv.innerHTML = `<label>年级</label><select class="row-grade" data-id="${row.id}">${gradeOptions.map(g => `<option value="${g}" ${row.grade === g ? 'selected' : ''}>${g}</option>`).join('')}<option value="">其他</option></select>`;
-            
-            // 科目输入
-            const subjectDiv = document.createElement("div");
-            subjectDiv.className = "form-group";
-            subjectDiv.style.minWidth = "120px";
-            subjectDiv.innerHTML = `<label>科目</label><input type="text" class="row-subject" data-id="${row.id}" placeholder="输入科目" value="${escapeHtml(row.subject)}" list="subjectList">`;
-            
-            // 分配状态
-            const statusDiv = document.createElement("div");
-            statusDiv.className = "form-group";
-            statusDiv.style.minWidth = "100px";
-            statusDiv.innerHTML = `<label>分配状态</label><select class="row-status" data-id="${row.id}"><option value="已分配" ${row.status === '已分配' ? 'selected' : ''}>已分配</option><option value="未分配" ${row.status === '未分配' ? 'selected' : ''}>未分配</option></select>`;
-            
-            // 负责人
-            const teacherDiv = document.createElement("div");
-            teacherDiv.className = "form-group";
-            teacherDiv.style.minWidth = "100px";
-            teacherDiv.innerHTML = `<label>负责人</label><input type="text" class="row-teacher" data-id="${row.id}" placeholder="姓名" value="${escapeHtml(row.teacher)}">`;
-            
-            // 备注
-            const remarkDiv = document.createElement("div");
-            remarkDiv.className = "form-group";
-            remarkDiv.style.minWidth = "120px";
-            remarkDiv.innerHTML = `<label>备注</label><input type="text" class="row-remark" data-id="${row.id}" placeholder="选填" value="${escapeHtml(row.remark)}">`;
-            
-            // 删除按钮
-            const actionDiv = document.createElement("div");
-            actionDiv.className = "form-group";
-            actionDiv.style.minWidth = "60px";
-            actionDiv.innerHTML = `<button class="delete-row-btn" data-id="${row.id}" style="background:#ff6b6b; padding:8px 12px; margin-top:28px;">删除</button>`;
-            
-            div.appendChild(gradeDiv);
-            div.appendChild(subjectDiv);
-            div.appendChild(statusDiv);
-            div.appendChild(teacherDiv);
-            div.appendChild(remarkDiv);
-            div.appendChild(actionDiv);
-            container.appendChild(div);
-        }
-        
-        // 绑定事件
-        document.querySelectorAll('.row-grade').forEach(sel => {
-            sel.addEventListener('change', (e) => updateRowField(parseInt(e.target.dataset.id), 'grade', e.target.value));
-        });
-        document.querySelectorAll('.row-subject').forEach(inp => {
-            inp.addEventListener('input', (e) => updateRowField(parseInt(e.target.dataset.id), 'subject', e.target.value));
-        });
-        document.querySelectorAll('.row-status').forEach(sel => {
-            sel.addEventListener('change', (e) => updateRowField(parseInt(e.target.dataset.id), 'status', e.target.value));
-        });
-        document.querySelectorAll('.row-teacher').forEach(inp => {
-            inp.addEventListener('input', (e) => updateRowField(parseInt(e.target.dataset.id), 'teacher', e.target.value));
-        });
-        document.querySelectorAll('.row-remark').forEach(inp => {
-            inp.addEventListener('input', (e) => updateRowField(parseInt(e.target.dataset.id), 'remark', e.target.value));
-        });
-        document.querySelectorAll('.delete-row-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = parseInt(e.target.dataset.id);
-                batchRows = batchRows.filter(r => r.id !== id);
-                renderBatchRows();
-            });
-        });
-    }
-
-    function updateRowField(rowId, field, value) {
-        const row = batchRows.find(r => r.id === rowId);
-        if (row) row[field] = value;
-        // 实时检查是否有变化并标记
-    }
-
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
-    // 从 GitHub Issues 加载已有数据
-    async function loadRecords() {
-        const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues?labels=yuejuan&state=all&per_page=100`;
+    // 加载已提交的数据
+    async function loadSubmittedData() {
         try {
+            const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues?labels=yuejuan&state=all&per_page=100`;
             const response = await fetch(url, {
-                headers: {
-                    'Authorization': `token ${GITHUB_TOKEN}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
             });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            if (!response.ok) return;
             const issues = await response.json();
-            existingRecords = [];
+            const newData = {};
             for (let issue of issues) {
                 try {
                     const data = JSON.parse(issue.body);
-                    existingRecords.push({
-                        id: issue.number,
-                        grade: data.grade,
-                        subject: data.subject,
-                        status: data.status,
-                        teacher: data.teacher || '',
-                        remark: data.remark || '',
-                        createdAt: issue.created_at,
-                        creator: issue.user?.login || '未知'
-                    });
+                    if (data.grade && data.subject && data.assignment !== undefined) {
+                        const key = `${data.grade}|${data.subject}`;
+                        newData[key] = data.assignment;
+                    }
                 } catch(e) {}
             }
-            renderRecords();
+            submittedData = newData;
+            renderTables();
         } catch (err) {
-            console.error('加载记录失败:', err);
-            document.getElementById('recordsList').innerHTML = `<div style="text-align:center;padding:40px;color:#bc3900;">加载失败: ${err.message}</div>`;
+            console.error("加载失败:", err);
         }
     }
 
-    // 渲染已提交的记录列表
-    function renderRecords() {
-        const gradeFilter = document.getElementById('filterGrade')?.value || '';
-        const statusFilter = document.getElementById('filterStatus')?.value || '';
-        const subjectFilter = document.getElementById('filterSubject')?.value?.trim().toLowerCase() || '';
+    // 渲染表格（底部 + 弹窗）
+    function renderTables() {
+        const grades = Object.keys(subjectConfig);
+        let tableHtml = `
+            <table class="status-table">
+                <thead>
+                    <tr>
+                        <th>年级</th>
+                        ${subjectConfig[grades[0]]?.map(sub => `<th>${sub}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        for (let grade of grades) {
+            const subjects = subjectConfig[grade];
+            tableHtml += `<tr><td class="grade-col">${grade}</td>`;
+            for (let subject of subjects) {
+                const key = `${grade}|${subject}`;
+                const assignment = submittedData[key];
+                const statusClass = assignment ? 'submitted' : 'not-submitted';
+                const statusText = assignment ? '已提交' : '未提交';
+                tableHtml += `<td><span class="${statusClass}">${statusText}</span></td>`;
+            }
+            tableHtml += `</tr>`;
+        }
+        tableHtml += `</tbody></table>`;
         
-        let filtered = [...existingRecords];
-        if (gradeFilter) filtered = filtered.filter(r => r.grade === gradeFilter);
-        if (statusFilter) filtered = filtered.filter(r => r.status === statusFilter);
-        if (subjectFilter) filtered = filtered.filter(r => r.subject.toLowerCase().includes(subjectFilter));
-        
-        filtered.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-        
-        const container = document.getElementById('recordsList');
-        if (filtered.length === 0) {
-            container.innerHTML = '<div style="text-align:center;padding:40px;color:#4a6f8f;">暂无记录，请在上方填写并提交</div>';
+        // 底部表格（精简版）
+        document.getElementById('tableWrapper').innerHTML = tableHtml;
+        // 弹窗表格（完整版）
+        document.getElementById('modalTableBody').innerHTML = tableHtml;
+    }
+
+    // 刷新科目下拉（根据年级）
+    function updateSubjectOptions() {
+        const grade = document.getElementById('gradeSelect').value;
+        const subjectSelect = document.getElementById('subjectSelect');
+        if (!grade || !subjectConfig[grade]) {
+            subjectSelect.disabled = true;
+            subjectSelect.innerHTML = '<option value="">请先选择年级</option>';
             return;
         }
+        subjectSelect.disabled = false;
+        const subjects = subjectConfig[grade];
+        subjectSelect.innerHTML = '<option value="">请选择科目</option>';
+        subjects.forEach(sub => {
+            const option = document.createElement('option');
+            option.value = sub;
+            option.textContent = sub;
+            subjectSelect.appendChild(option);
+        });
+    }
+
+    // 提交数据
+    async function submitAssignment() {
+        const grade = document.getElementById('gradeSelect').value;
+        const subject = document.getElementById('subjectSelect').value;
+        const assignment = document.getElementById('assignmentText').value.trim();
         
-        container.innerHTML = filtered.map(record => `
-            <div class="record-item">
-                <div class="record-header">
-                    <span>📅 ${new Date(record.createdAt).toLocaleString()}</span>
-                    <span>👤 ${record.creator}</span>
-                </div>
-                <div class="record-content">
-                    <strong>${record.grade} · ${record.subject}</strong><br>
-                    状态: <span style="color:${record.status === '已分配' ? '#2b6e3b' : '#bc3900'}">${record.status}</span><br>
-                    负责人: ${record.teacher || '—'}<br>
-                    备注: ${record.remark || '—'}
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // 收集变更
-    function collectChanges() {
-        const changes = [];
-        for (let row of batchRows) {
-            if (!row.grade || !row.subject) continue;
-            const key = `${row.grade}|${row.subject}`;
-            const existing = existingRecords.find(r => r.grade === row.grade && r.subject === row.subject);
-            if (!existing) {
-                changes.push({ type: 'new', ...row });
-            } else if (existing.status !== row.status || existing.teacher !== row.teacher || existing.remark !== row.remark) {
-                changes.push({ type: 'modify', ...row, old_status: existing.status, old_teacher: existing.teacher, old_remark: existing.remark });
-            }
-        }
-        return changes;
-    }
-
-    function showDiffModal(changes) {
-        if (!changes.length) {
-            alert('没有检测到任何修改');
+        if (!grade || !subject) {
+            alert('请选择年级和科目');
             return;
         }
-        let msg = '📊 本次修改对比：\n\n';
-        for (let c of changes) {
-            if (c.type === 'new') {
-                msg += `➕ 新增：${c.grade} ${c.subject} → 状态:${c.status}, 负责人:${c.teacher}\n`;
-            } else {
-                msg += `✏️ 修改：${c.grade} ${c.subject}\n`;
-                if (c.old_status !== c.status) msg += `   状态: ${c.old_status} → ${c.status}\n`;
-                if (c.old_teacher !== c.teacher) msg += `   负责人: ${c.old_teacher} → ${c.teacher}\n`;
-                if (c.old_remark !== c.remark) msg += `   备注: ${c.old_remark} → ${c.remark}\n`;
-            }
+        if (!assignment) {
+            alert('请填写分配情况');
+            return;
         }
-        msg += `\n共 ${changes.length} 条变更，确认提交吗？`;
-        if (confirm(msg)) {
-            submitChanges(changes);
-        }
-    }
 
-    async function submitChanges(changes) {
-        if (!changes.length) return;
+        const key = `${grade}|${subject}`;
+        const existing = submittedData[key];
         
-        const submitData = changes.map(c => ({
-            grade: c.grade,
-            subject: c.subject,
-            status: c.status,
-            teacher: c.teacher || '',
-            remark: c.remark || ''
-        }));
-        
-        showMessage(`正在提交 ${submitData.length} 条数据...`, 'loading');
-        
-        let successCount = 0;
-        for (let data of submitData) {
-            try {
-                const title = `${data.grade} · ${data.subject}`;
-                const body = JSON.stringify({
-                    grade: data.grade,
-                    subject: data.subject,
-                    status: data.status,
-                    teacher: data.teacher,
-                    remark: data.remark,
-                    submittedAt: new Date().toISOString()
-                }, null, 2);
-                
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        title: title,
-                        body: body,
-                        labels: ['yuejuan']
-                    })
-                });
-                
-                if (response.ok) {
-                    successCount++;
-                } else {
-                    const err = await response.json();
-                    console.error('提交失败:', err);
-                }
-            } catch (err) {
-                console.error('网络错误:', err);
+        // 查找是否已有 Issue
+        let issueNumber = null;
+        const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues?labels=yuejuan&state=all&per_page=100`;
+        const response = await fetch(url, {
+            headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if (response.ok) {
+            const issues = await response.json();
+            for (let issue of issues) {
+                try {
+                    const data = JSON.parse(issue.body);
+                    if (data.grade === grade && data.subject === subject) {
+                        issueNumber = issue.number;
+                        break;
+                    }
+                } catch(e) {}
             }
         }
+
+        const body = JSON.stringify({ grade, subject, assignment, updatedAt: new Date().toISOString() });
+        let success = false;
         
-        if (successCount === submitData.length) {
-            showMessage(`✅ 提交成功！共 ${successCount} 条数据已保存`, 'success');
-            // 清空批量填写表单，只保留一行空行
-            batchRows = [{
-                id: nextRowId++,
-                grade: "",
-                subject: "",
-                status: "未分配",
-                teacher: "",
-                remark: ""
-            }];
-            renderBatchRows();
-            await loadRecords(); // 重新加载数据
+        if (issueNumber) {
+            // 更新现有 Issue
+            const updateResp = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues/${issueNumber}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ body })
+            });
+            success = updateResp.ok;
         } else {
-            showMessage(`⚠️ 提交完成：成功 ${successCount}/${submitData.length} 条，部分失败请重试`, 'error');
+            // 创建新 Issue
+            const title = `${grade}·${subject}`;
+            const createResp = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title, body, labels: ['yuejuan'] })
+            });
+            success = createResp.ok;
+        }
+
+        if (success) {
+            // 显示提示弹窗
+            showToast(`${grade} ${subject} 已提交`);
+            // 清空表单
+            document.getElementById('assignmentText').value = '';
+            document.getElementById('subjectSelect').value = '';
+            document.getElementById('gradeSelect').value = '';
+            document.getElementById('subjectSelect').disabled = true;
+            subjectSelect.innerHTML = '<option value="">请先选择年级</option>';
+            // 重新加载数据
+            await loadSubmittedData();
+        } else {
+            alert('提交失败，请重试');
         }
     }
 
-    function showMessage(msg, type) {
-        const msgDiv = document.getElementById('messageArea');
-        msgDiv.innerHTML = msg;
-        msgDiv.className = `message ${type}`;
+    // 显示短暂提示
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerText = message;
+        document.body.appendChild(toast);
         setTimeout(() => {
-            if (msgDiv.innerHTML === msg) msgDiv.innerHTML = '';
-        }, 3000);
+            toast.remove();
+        }, 2000);
+    }
+
+    // 弹窗控制
+    function openModal() {
+        document.getElementById('statusModal').style.display = 'flex';
+    }
+    function closeModal() {
+        document.getElementById('statusModal').style.display = 'none';
+    }
+
+    // 页面加载时自动弹出表格
+    let hasShownModal = false;
+    function autoShowModalOnLoad() {
+        if (!hasShownModal && Object.keys(submittedData).length > 0) {
+            setTimeout(() => {
+                openModal();
+            }, 500);
+            hasShownModal = true;
+        } else if (!hasShownModal) {
+            setTimeout(() => {
+                openModal();
+            }, 800);
+            hasShownModal = true;
+        }
     }
 
     // 事件绑定
-    document.getElementById('addBatchRowBtn')?.addEventListener('click', () => {
-        batchRows.push({
-            id: nextRowId++,
-            grade: "",
-            subject: "",
-            status: "未分配",
-            teacher: "",
-            remark: ""
-        });
-        renderBatchRows();
+    document.getElementById('gradeSelect').addEventListener('change', updateSubjectOptions);
+    document.getElementById('submitBtn').addEventListener('click', submitAssignment);
+    document.getElementById('viewTableBtn').addEventListener('click', openModal);
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    window.addEventListener('click', (e) => {
+        const modal = document.getElementById('statusModal');
+        if (e.target === modal) closeModal();
     });
-    
-    document.getElementById('compareBtn')?.addEventListener('click', () => {
-        const changes = collectChanges();
-        showDiffModal(changes);
-    });
-    
-    document.getElementById('batchSubmitBtn')?.addEventListener('click', async () => {
-        const changes = collectChanges();
-        if (changes.length === 0) {
-            alert('没有检测到任何修改');
-            return;
-        }
-        await submitChanges(changes);
-    });
-    
-    document.getElementById('filterGrade')?.addEventListener('change', () => renderRecords());
-    document.getElementById('filterStatus')?.addEventListener('change', () => renderRecords());
-    document.getElementById('filterSubject')?.addEventListener('input', () => renderRecords());
-    
-    // 添加datalist预设科目
-    const datalist = document.createElement('datalist');
-    datalist.id = 'subjectList';
-    subjectPresets.forEach(s => {
-        const option = document.createElement('option');
-        option.value = s;
-        datalist.appendChild(option);
-    });
-    document.body.appendChild(datalist);
-    
+
     // 启动
-    initBatchRows();
-    loadRecords();
+    loadSubmittedData().then(() => {
+        autoShowModalOnLoad();
+    });
 </script>
 </body>
 </html>
