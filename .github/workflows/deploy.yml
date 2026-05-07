@@ -24,9 +24,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
-      - name: Replace token in HTML
-              run: |
-        sed -i "s|GITHUB_TOKEN_PLACEHOLDER|${{ secrets.GH_PAT }}|g" index.html
+            - name: Inject Token into HTML
+        run: |
+          sed -i "s|GITHUB_TOKEN_PLACEHOLDER|${{ secrets.GITHUB_TOKEN }}|g" index.html
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
