@@ -3,451 +3,516 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>阅卷分配 - 教研组填报系统</title>
+    <title>阅卷分配 - 三列模式</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
         body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Noto Sans', sans-serif;
-            background: #f2f5f9;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f7ff;
             margin: 0;
             padding: 20px;
             color: #1f2d3d;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        /* 卡片样式 */
+        .container { max-width: 1400px; margin: 0 auto; }
         .card {
             background: white;
-            border-radius: 28px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 6px rgba(0,0,0,0.05);
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
             padding: 24px 28px;
             margin-bottom: 32px;
-            transition: all 0.2s;
         }
         h1 {
             font-size: 1.8rem;
-            font-weight: 600;
-            color: #0b3b5c;
+            color: #1e466e;
             margin: 0 0 8px 0;
-            display: flex;
-            align-items: center;
-            gap: 12px;
         }
         .sub {
-            color: #4a627a;
+            color: #4a6f8f;
             border-left: 4px solid #2c7da0;
             padding-left: 16px;
             margin: 12px 0 0 0;
-            font-size: 0.9rem;
         }
-        .form-row {
+        .toolbar {
             display: flex;
-            flex-wrap: wrap;
-            gap: 18px;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
-        }
-        .form-group {
-            flex: 1;
-            min-width: 150px;
-        }
-        label {
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: #1f3b4c;
-            display: block;
-            margin-bottom: 8px;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #d0dde9;
-            border-radius: 20px;
-            font-size: 0.95rem;
-            background: white;
-            transition: 0.2s;
-            font-family: inherit;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #2c7da0;
-            box-shadow: 0 0 0 3px rgba(44,125,160,0.15);
+            flex-wrap: wrap;
+            gap: 12px;
         }
         button {
-            background: #1e6f5c;
+            background: #2c7da0;
             color: white;
             border: none;
-            padding: 12px 28px;
+            padding: 10px 24px;
             border-radius: 40px;
             font-weight: 600;
-            font-size: 0.95rem;
             cursor: pointer;
             transition: 0.2s;
-            margin-top: 8px;
         }
-        button:hover {
-            background: #0f5a4a;
-            transform: translateY(-1px);
-        }
-        .refresh-btn {
-            background: #2c7da0;
-            margin: 0;
-        }
-        .refresh-btn:hover {
-            background: #1f6280;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 40px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .assigned { background: #e0f2e9; color: #1b6b41; }
-        .unassigned { background: #ffe6e2; color: #bc3900; }
+        button:hover { background: #1f5e7a; transform: translateY(-1px); }
+        .btn-primary { background: #1e6f5c; }
+        .btn-primary:hover { background: #0f5a4a; }
+        .btn-outline { background: white; color: #2c7da0; border: 1px solid #2c7da0; }
+        .btn-outline:hover { background: #e9f2f9; transform: none; }
+        .btn-add { background: #4a6f8f; }
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.85rem;
         }
         th {
-            background: #eef3fc;
+            background: #e9f2f9;
             padding: 12px 8px;
             text-align: left;
-            font-weight: 600;
             position: sticky;
             top: 0;
-            backdrop-filter: blur(4px);
         }
         td {
             padding: 10px 8px;
-            border-bottom: 1px solid #e6edf4;
+            border-bottom: 1px solid #e2edf2;
+            vertical-align: middle;
         }
-        .missing-row {
-            background-color: #fff6eb;
+        tr.changed-row {
+            background-color: #fff7e0;
         }
-        .filter-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 24px;
-            align-items: flex-end;
+        tr.new-row {
+            background-color: #e0f7e8;
         }
-        .filter-group {
-            flex: 1;
-            min-width: 130px;
+        select, input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #cbdde6;
+            border-radius: 12px;
+            font-size: 0.85rem;
         }
-        .remark {
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 4px 12px;
+            cursor: pointer;
             font-size: 0.7rem;
-            color: #6a7f9b;
-            margin-top: 20px;
+        }
+        .delete-btn:hover { background: #ee5a5a; }
+        .message {
+            margin-top: 16px;
+            padding: 10px;
+            border-radius: 12px;
             text-align: center;
         }
-        @media (max-width: 700px) {
-            .card { padding: 18px; }
-            th, td { font-size: 0.75rem; }
+        .message.success { background: #dff0e6; color: #2b6e3b; }
+        .message.error { background: #ffe2dd; color: #bc3900; }
+        .message.loading { background: #e9f2f9; color: #1e466e; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
-        .toast {
-            background: #1e2a36;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 40px;
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 850px;
+            max-height: 80%;
+            overflow: auto;
+            padding: 20px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2edf2;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+        .diff-table {
+            width: 100%;
             font-size: 0.8rem;
-            display: inline-block;
-            margin-top: 12px;
+            border-collapse: collapse;
+        }
+        .diff-table td, .diff-table th {
+            border: 1px solid #e2edf2;
+            padding: 8px;
+            vertical-align: top;
+        }
+        .badge-changed {
+            background: #f5a623;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+        .badge-new {
+            background: #2b6e3b;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+        @media (max-width: 700px) {
+            .card { padding: 16px; }
+            th, td { font-size: 0.7rem; }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <!-- 填写卡片 -->
     <div class="card">
-        <h1>📋 阅卷分配填报 · 教研组专用</h1>
-        <div class="sub">组长填写科目分配情况，提交后自动汇总到飞书表格，全校实时可查</div>
-        <form id="submitForm">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>📌 年级</label>
-                    <select id="grade" required>
-                        <option value="">请选择</option>
-                        <option>七年级</option><option>八年级</option><option>九年级</option>
-                        <option>高一</option><option>高二</option><option>高三</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>📚 科目</label>
-                    <input type="text" id="subject" placeholder="例：语文 / 数学 / 英语 ..." required>
-                </div>
-                <div class="form-group">
-                    <label>✅ 分配状态</label>
-                    <select id="status" required>
-                        <option value="">请选择</option>
-                        <option value="已分配">已分配</option>
-                        <option value="未分配">未分配</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>🧑‍🏫 负责人</label>
-                    <input type="text" id="teacher" placeholder="阅卷组长姓名">
-                </div>
-                <div class="form-group">
-                    <label>📝 备注</label>
-                    <input type="text" id="remark" placeholder="选填">
-                </div>
-            </div>
-            <button type="submit">✅ 提交分配信息</button>
-            <div id="formMessage" style="margin-top: 12px; font-size:0.8rem;"></div>
-        </form>
+        <h1>📋 阅卷分配 · 批量填写</h1>
+        <div class="sub">组长可自由添加年级+科目，填写分配状态。修改后点击「查看对比」→「确认提交」</div>
     </div>
 
-    <!-- 展示 + 筛选卡片 -->
     <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-            <h2 style="margin:0 0 8px 0;">📊 实时分配结果</h2>
-            <button class="refresh-btn" id="refreshBtn">🔄 刷新数据</button>
-        </div>
-        <div class="filter-bar">
-            <div class="filter-group">
-                <label>年级筛选</label>
-                <select id="filterGrade"><option value="">全部年级</option></select>
-            </div>
-            <div class="filter-group">
-                <label>状态筛选</label>
-                <select id="filterStatus"><option value="">全部</option><option>已分配</option><option>未分配</option></select>
-            </div>
-            <div class="filter-group">
-                <label>科目搜索</label>
-                <input type="text" id="filterSubject" placeholder="语文 / 数学 ...">
+        <div class="toolbar">
+            <button id="addRowBtn" class="btn-add">➕ 添加一行</button>
+            <div>
+                <button id="compareBtn" class="btn-outline">🔍 查看本次修改对比</button>
+                <button id="batchSubmitBtn" class="btn-primary">📤 批量提交</button>
+                <button id="refreshBtn">🔄 刷新</button>
             </div>
         </div>
-        <div style="overflow-x: auto; max-height: 550px;">
+
+        <div style="overflow-x: auto; max-height: 600px;">
             <table id="dataTable">
-                <thead><tr><th>时间</th><th>年级</th><th>科目</th><th>状态</th><th>负责人</th><th>备注</th></tr></thead>
-                <tbody id="tableBody"><tr><td colspan="6" style="text-align:center;">加载记录中...</td></tr></tbody>
+                <thead>
+                    <tr>
+                        <th>年级</th><th>科目</th><th>分配状态</th><th style="width:60px">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
             </table>
         </div>
-        <div class="remark">⚡ 数据存储于飞书多维表格 | 组长提交后请点“刷新”获取最新汇总</div>
+        <div id="messageArea" class="message"></div>
+    </div>
+</div>
+
+<div id="diffModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📊 本次修改对比</h3>
+            <button id="closeModalBtn" style="background:none; color:#666; font-size:24px; padding:0;">&times;</button>
+        </div>
+        <div id="diffContent">加载中...</div>
+        <div style="margin-top: 20px; text-align: right;">
+            <button id="confirmSubmitBtn" class="btn-primary">✅ 确认提交以上修改</button>
+        </div>
     </div>
 </div>
 
 <script>
- // ========================= 配置区域 - 请替换成你自己的飞书应用信息 =========================
-const APP_ID = "cli_a97636d2fe791cc3";          // 替换为 App ID
-const APP_SECRET = "yo6yPjPdvI1CAGv8C50heZ3Nl4R45vn9";  // 替换为 App Secret
-const ENCRYPT_KEY = "1bUj3XpQ8YtR5sLdV2hNmG7cFwZk9TxB"; // 替换为 Encrypt Key (来自事件订阅页面)
-const BASE_ID = "bASEnzVHLjDLhH0iGgQ";           // 替换为多维表格ID (b开头的那串)
-const TABLE_NAME = "阅卷分配记录";                // 你的多维表格名称，确保一致
-// ====================================================================================
+    // ==================== ⚠️ 请修改以下配置 ⚠️ ====================
+    const BASE_ID = "FXyxbX8DXaPaUMsYG8mcQfS7nUo";   // 你的表格ID
+    // =================================================================
+    
+    // 飞书应用凭证（固定）
+    const APP_ID = "cli_a97636d2fe791cc3";
+    const APP_SECRET = "yo6yPjPdvI1CAGv8C50heZ3Nl4R45vn9";
 
-    let tenantAccessToken = "";     // 飞书访问令牌
+    // 年级预设列表
+    const gradePresets = ["七年级", "八年级", "九年级", "高一", "高二", "高三"];
+    // 科目预设列表
+    const subjectPresets = ["语文", "数学", "英语", "物理", "化学", "生物", "历史", "地理", "政治", "体育", "音乐", "美术"];
 
-    // 辅助函数：获取 tenant_access_token
+    let tenantAccessToken = "";
+    let originalData = {};
+    let currentRows = [];
+    let nextId = 1;
+
     async function getTenantToken() {
         const url = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal";
-        const payload = {
-            app_id: APP_ID,
-            app_secret: APP_SECRET
-        };
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-            const data = await response.json();
-            if (data.code === 0 && data.tenant_access_token) {
-                tenantAccessToken = data.tenant_access_token;
-                return tenantAccessToken;
-            } else {
-                console.error("获取 tenant token 失败", data);
-                throw new Error("飞书授权失败: " + JSON.stringify(data));
-            }
-        } catch (err) {
-            console.error(err);
-            throw new Error("网络错误，无法连接飞书");
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ app_id: APP_ID, app_secret: APP_SECRET })
+        });
+        const data = await response.json();
+        if (data.code === 0 && data.tenant_access_token) {
+            tenantAccessToken = data.tenant_access_token;
+            return tenantAccessToken;
         }
+        throw new Error("获取飞书token失败: " + JSON.stringify(data));
     }
 
-    // 确保 token 有效 (简单实现，每次调用都刷新，生产可缓存5小时)
     async function ensureToken() {
-        if (!tenantAccessToken) {
-            await getTenantToken();
-        }
+        if (!tenantAccessToken) await getTenantToken();
         return tenantAccessToken;
     }
 
-    // 获取表格所有记录 (读取数据)
-    async function fetchAllRecords() {
-        try {
-            await ensureToken();
-            // 先获取表格ID对应的记录列表
-            const listUrl = `https://open.feishu.cn/open-apis/bitable/v1/apps/${BASE_ID}/tables/${TABLE_NAME}/records?page_size=100`;
-            const resp = await fetch(listUrl, {
-                headers: {
-                    "Authorization": `Bearer ${tenantAccessToken}`,
-                    "Content-Type": "application/json"
-                }
-            });
-            const listData = await resp.json();
-            if (listData.code !== 0) {
-                console.error("获取记录失败", listData);
-                return [];
-            }
-            const records = listData.data.items || [];
-            // 转换为前端友好的数组 [{时间,年级,科目,分配状态,负责人,备注}]
-            const rows = records.map(record => {
-                const fields = record.fields;
-                // 处理时间字段 (飞书多维表格创建时间)
-                const createdAt = record.created_time ? new Date(record.created_time).toLocaleString() : "—";
-                return {
-                    id: record.record_id,
-                    time: createdAt,
-                    grade: fields["年级"] || "",
-                    subject: fields["科目"] || "",
-                    status: fields["分配状态"] || "",
-                    teacher: fields["负责人"] || "",
-                    remark: fields["备注"] || ""
-                };
-            });
-            // 按时间倒序
-            rows.sort((a,b) => new Date(b.time) - new Date(a.time));
-            return rows;
-        } catch (err) {
-            console.error("读取飞书表格错误", err);
-            return [];
-        }
-    }
-
-    // 添加记录 (提交新分配)
-    async function addRecord(grade, subject, status, teacher, remark) {
-        try {
-            await ensureToken();
-            const addUrl = `https://open.feishu.cn/open-apis/bitable/v1/apps/${BASE_ID}/tables/${TABLE_NAME}/records`;
-            const fields = {
-                "年级": grade,
-                "科目": subject,
-                "分配状态": status,
-                "负责人": teacher || "",
-                "备注": remark || ""
-            };
-            const payload = { fields };
-            const resp = await fetch(addUrl, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${tenantAccessToken}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-            const data = await resp.json();
-            if (data.code === 0) {
-                return { success: true };
-            } else {
-                console.error("飞书添加记录错误", data);
-                return { success: false, msg: data.msg };
-            }
-        } catch (err) {
-            console.error("提交异常", err);
-            return { success: false, msg: err.message };
-        }
-    }
-
-    // 渲染表格 (从飞书拉取最新数据并展示)
-    async function renderDataTable() {
-        const tbody = document.getElementById("tableBody");
-        tbody.innerHTML = '<tr><td colspan="6">加载中...</td></tr>';
-        const rows = await fetchAllRecords();
-        
-        // 筛选逻辑
-        const gradeFilter = document.getElementById("filterGrade").value;
-        const statusFilter = document.getElementById("filterStatus").value;
-        const subjectKeyword = document.getElementById("filterSubject").value.trim().toLowerCase();
-        
-        let filtered = rows;
-        if (gradeFilter) {
-            filtered = filtered.filter(r => r.grade === gradeFilter);
-        }
-        if (statusFilter) {
-            filtered = filtered.filter(r => r.status === statusFilter);
-        }
-        if (subjectKeyword) {
-            filtered = filtered.filter(r => r.subject.toLowerCase().includes(subjectKeyword));
-        }
-        
-        if (filtered.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6">暂无数据，请组长填写～</td></tr>';
-            return;
-        }
-        
-        let html = "";
-        for (let row of filtered) {
-            const statusClass = row.status === "已分配" ? "assigned" : "unassigned";
-            const missingClass = (row.status === "未分配") ? "missing-row" : "";
-            html += `<tr class="${missingClass}">
-                        <td>${row.time}</td>
-                        <td>${row.grade}</td>
-                        <td><strong>${row.subject}</strong></td>
-                        <td><span class="status-badge ${statusClass}">${row.status}</span></td>
-                        <td>${row.teacher || "—"}</td>
-                        <td>${row.remark || ""}</td>
-                     </tr>`;
-        }
-        tbody.innerHTML = html;
-        
-        // 更新年级筛选下拉框
-        const gradeSet = new Set();
-        rows.forEach(r => { if(r.grade) gradeSet.add(r.grade); });
-        const gradeSelect = document.getElementById("filterGrade");
-        const currentGradeVal = gradeSelect.value;
-        gradeSelect.innerHTML = '<option value="">全部年级</option>';
-        Array.from(gradeSet).sort().forEach(g => {
-            gradeSelect.innerHTML += `<option value="${g}">${g}</option>`;
+    // 获取表格信息
+    async function getTableInfo() {
+        await ensureToken();
+        const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${BASE_ID}/tables`;
+        const response = await fetch(url, {
+            headers: { "Authorization": `Bearer ${tenantAccessToken}`, "Content-Type": "application/json" }
         });
-        if (currentGradeVal && gradeSet.has(currentGradeVal)) gradeSelect.value = currentGradeVal;
-        else gradeSelect.value = "";
+        const data = await response.json();
+        if (data.code !== 0) {
+            throw new Error(`获取表格信息失败: ${data.msg} (code: ${data.code})`);
+        }
+        const tables = data.data.items || [];
+        if (tables.length === 0) throw new Error("表格中没有数据表");
+        return tables[0];
     }
 
-    // 提交表单逻辑
-    document.getElementById("submitForm").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const grade = document.getElementById("grade").value;
-        const subject = document.getElementById("subject").value.trim();
-        const status = document.getElementById("status").value;
-        const teacher = document.getElementById("teacher").value.trim();
-        const remark = document.getElementById("remark").value.trim();
-        if (!grade || !subject || !status) {
-            alert("请填写完整信息（年级、科目、分配状态）");
+    // 读取已有记录
+    async function fetchExistingRecords() {
+        await ensureToken();
+        const tableInfo = await getTableInfo();
+        const tableId = tableInfo.table_id;
+        const listUrl = `https://open.feishu.cn/open-apis/bitable/v1/apps/${BASE_ID}/tables/${tableId}/records?page_size=500`;
+        const response = await fetch(listUrl, {
+            headers: { "Authorization": `Bearer ${tenantAccessToken}`, "Content-Type": "application/json" }
+        });
+        const data = await response.json();
+        if (data.code !== 0) return {};
+        const records = data.data.items || [];
+        const map = {};
+        for (let record of records) {
+            const fields = record.fields;
+            const grade = fields["年级"] || "";
+            const subject = fields["科目"] || "";
+            const key = `${grade}|${subject}`;
+            map[key] = {
+                record_id: record.record_id,
+                status: fields["分配状态"] || "未分配"
+            };
+        }
+        return map;
+    }
+
+    // 批量提交
+    async function batchUpsert(updates) {
+        await ensureToken();
+        const tableInfo = await getTableInfo();
+        const tableId = tableInfo.table_id;
+        
+        const addUrl = `https://open.feishu.cn/open-apis/bitable/v1/apps/${BASE_ID}/tables/${tableId}/records/batch_create`;
+        const updateUrl = `https://open.feishu.cn/open-apis/bitable/v1/apps/${BASE_ID}/tables/${tableId}/records/batch_update`;
+
+        const toCreate = [], toUpdate = [];
+        for (let item of updates) {
+            const fields = {
+                "年级": item.grade,
+                "科目": item.subject,
+                "分配状态": item.status
+            };
+            if (item.record_id) {
+                toUpdate.push({ record_id: item.record_id, fields });
+            } else {
+                toCreate.push({ fields });
+            }
+        }
+        
+        const results = [];
+        if (toCreate.length) {
+            const createResp = await fetch(addUrl, {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${tenantAccessToken}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ items: toCreate })
+            });
+            const createData = await createResp.json();
+            results.push(createData);
+            if (createData.code !== 0) console.error("创建失败:", createData);
+        }
+        if (toUpdate.length) {
+            const updateResp = await fetch(updateUrl, {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${tenantAccessToken}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ items: toUpdate })
+            });
+            const updateData = await updateResp.json();
+            results.push(updateData);
+            if (updateData.code !== 0) console.error("更新失败:", updateData);
+        }
+        return results.every(r => r && r.code === 0);
+    }
+
+    // 收集变化
+    function collectChanges() {
+        const changes = [];
+        for (let row of currentRows) {
+            if (!row.grade || !row.subject) continue;
+            const key = `${row.grade}|${row.subject}`;
+            const existing = originalData[key];
+            if (!existing && row.isNew) {
+                changes.push({
+                    type: "new",
+                    grade: row.grade, subject: row.subject, status: row.status,
+                    record_id: null
+                });
+            } else if (existing && existing.status !== row.status) {
+                changes.push({
+                    type: "modify",
+                    grade: row.grade, subject: row.subject,
+                    status: row.status,
+                    old_status: existing.status,
+                    record_id: existing.record_id
+                });
+            }
+        }
+        return changes;
+    }
+
+    // 渲染表格
+    function renderTableBody() {
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "";
+        for (let i = 0; i < currentRows.length; i++) {
+            const row = currentRows[i];
+            const tr = tbody.insertRow();
+            if (row.isNew) tr.classList.add("new-row");
+            
+            const gradeCell = tr.insertCell(0);
+            const gradeSelect = document.createElement("select");
+            gradeSelect.className = "grade-select";
+            gradeSelect.innerHTML = `<option value="">-- 请选择年级 --</option>`;
+            gradePresets.forEach(g => {
+                gradeSelect.innerHTML += `<option value="${g}" ${row.grade === g ? 'selected' : ''}>${g}</option>`;
+            });
+            gradeSelect.addEventListener("change", (e) => { row.grade = e.target.value; markRowChange(tr, row); });
+            gradeCell.appendChild(gradeSelect);
+            
+            const subjectCell = tr.insertCell(1);
+            const subjectInput = document.createElement("input");
+            subjectInput.type = "text";
+            subjectInput.placeholder = "输入科目";
+            subjectInput.value = row.subject || "";
+            const datalistId = `datalist_${i}`;
+            const datalist = document.createElement("datalist");
+            datalist.id = datalistId;
+            subjectPresets.forEach(s => { const opt = document.createElement("option"); opt.value = s; datalist.appendChild(opt); });
+            subjectInput.setAttribute("list", datalistId);
+            document.body.appendChild(datalist);
+            subjectInput.addEventListener("input", (e) => { row.subject = e.target.value; markRowChange(tr, row); });
+            subjectCell.appendChild(subjectInput);
+            
+            const statusCell = tr.insertCell(2);
+            const statusSelect = document.createElement("select");
+            statusSelect.innerHTML = `<option value="已分配" ${row.status === "已分配" ? 'selected' : ''}>已分配</option><option value="未分配" ${row.status === "未分配" ? 'selected' : ''}>未分配</option>`;
+            statusSelect.addEventListener("change", (e) => { row.status = e.target.value; markRowChange(tr, row); });
+            statusCell.appendChild(statusSelect);
+            
+            const actionCell = tr.insertCell(3);
+            const delBtn = document.createElement("button");
+            delBtn.textContent = "删除";
+            delBtn.className = "delete-btn";
+            delBtn.onclick = () => { currentRows.splice(i, 1); renderTableBody(); };
+            actionCell.appendChild(delBtn);
+        }
+    }
+    
+    function markRowChange(tr, row) {
+        if (!row.grade || !row.subject) return;
+        const key = `${row.grade}|${row.subject}`;
+        const existing = originalData[key];
+        if (!existing && row.isNew) {
+            tr.classList.add("new-row");
+            tr.classList.remove("changed-row");
+        } else if (existing && existing.status !== row.status) {
+            tr.classList.add("changed-row");
+            tr.classList.remove("new-row");
+        } else {
+            tr.classList.remove("changed-row", "new-row");
+        }
+    }
+
+    async function loadFromFeishu() {
+        try {
+            const existing = await fetchExistingRecords();
+            originalData = existing;
+            const rows = [];
+            let idCounter = 1;
+            for (const [key, val] of Object.entries(existing)) {
+                const [grade, subject] = key.split("|");
+                rows.push({
+                    id: idCounter++, grade, subject,
+                    status: val.status,
+                    isNew: false, originalKey: key
+                });
+            }
+            currentRows = rows;
+            nextId = idCounter;
+            renderTableBody();
+            showMessage("数据加载成功", "success");
+        } catch (err) {
+            console.error(err);
+            showMessage("加载飞书数据失败: " + err.message, "error");
+            currentRows = [];
+            renderTableBody();
+        }
+    }
+
+    function addNewRow() {
+        currentRows.push({
+            id: nextId++,
+            grade: "", subject: "", status: "未分配",
+            isNew: true, originalKey: null
+        });
+        renderTableBody();
+    }
+
+    function showDiffModal(changes) {
+        if (!changes.length) {
+            document.getElementById("diffContent").innerHTML = '<p>✅ 没有检测到任何修改</p>';
+            document.getElementById("diffModal").style.display = "flex";
             return;
         }
-        const msgDiv = document.getElementById("formMessage");
-        msgDiv.innerHTML = "⏳ 正在提交到飞书...";
-        const result = await addRecord(grade, subject, status, teacher, remark);
-        if (result.success) {
-            msgDiv.innerHTML = "✅ 提交成功！表格已更新，点击「刷新数据」查看最新分配。";
-            document.getElementById("submitForm").reset();
-            // 自动刷新展示（但稍微延迟等待飞书索引）
-            setTimeout(() => renderDataTable(), 800);
-        } else {
-            msgDiv.innerHTML = `❌ 提交失败: ${result.msg || "未知错误，请联系管理员"}`;
+        let html = `<table class="diff-table"><thead><tr><th>类型</th><th>年级</th><th>科目</th><th>原状态</th><th>新状态</th></tr></thead><tbody>`;
+        for (let c of changes) {
+            const typeLabel = c.type === "new" ? '<span class="badge-new">新增</span>' : '<span class="badge-changed">修改</span>';
+            html += `<tr><td>${typeLabel}</td><td>${c.grade}</td><td>${c.subject}</td><td>${c.old_status || '—'}</td><td><strong>${c.status}</strong></td></tr>`;
         }
+        html += `</tbody></table><p><span class="badge-changed">共 ${changes.length} 条变更</span></p>`;
+        document.getElementById("diffContent").innerHTML = html;
+        document.getElementById("diffModal").style.display = "flex";
+        window.pendingChanges = changes;
+    }
+
+    async function doSubmit(changes) {
+        if (!changes || changes.length === 0) {
+            showMessage("没有检测到修改", "success");
+            return;
+        }
+        const submitData = changes.map(c => ({
+            grade: c.grade, subject: c.subject, status: c.status, record_id: c.record_id || null
+        }));
+        showMessage(`正在提交 ${submitData.length} 条数据...`, "loading");
+        const success = await batchUpsert(submitData);
+        if (success) {
+            showMessage(`✅ 提交成功！共 ${submitData.length} 条数据已保存`, "success");
+            await loadFromFeishu();
+        } else {
+            showMessage("❌ 提交失败，请检查网络或配置。打开F12查看具体错误", "error");
+        }
+        document.getElementById("diffModal").style.display = "none";
+    }
+
+    function showMessage(msg, type) {
+        const msgDiv = document.getElementById("messageArea");
+        msgDiv.innerHTML = msg;
+        msgDiv.className = `message ${type}`;
+        setTimeout(() => { if (msgDiv.innerHTML === msg) msgDiv.innerHTML = ""; }, 3000);
+    }
+
+    document.getElementById("addRowBtn").addEventListener("click", addNewRow);
+    document.getElementById("compareBtn").addEventListener("click", () => showDiffModal(collectChanges()));
+    document.getElementById("batchSubmitBtn").addEventListener("click", async () => await doSubmit(collectChanges()));
+    document.getElementById("refreshBtn").addEventListener("click", () => loadFromFeishu());
+    document.getElementById("closeModalBtn").addEventListener("click", () => document.getElementById("diffModal").style.display = "none");
+    document.getElementById("confirmSubmitBtn").addEventListener("click", async () => {
+        let changes = window.pendingChanges || collectChanges();
+        await doSubmit(changes);
     });
+    window.addEventListener("click", (e) => { if (e.target === document.getElementById("diffModal")) document.getElementById("diffModal").style.display = "none"; });
     
-    // 刷新按钮
-    document.getElementById("refreshBtn").addEventListener("click", () => renderDataTable());
-    
-    // 筛选器事件
-    document.getElementById("filterGrade").addEventListener("change", () => renderDataTable());
-    document.getElementById("filterStatus").addEventListener("change", () => renderDataTable());
-    document.getElementById("filterSubject").addEventListener("input", () => renderDataTable());
-    
-    // 页面初始化
-    renderDataTable().catch(err => {
-        console.error(err);
-        document.getElementById("tableBody").innerHTML = '<tr><td colspan="6">读取飞书失败，请检查 App ID / Secret / 表格ID 配置是否正确</td></tr>';
-    });
+    loadFromFeishu();
 </script>
 </body>
 </html>
