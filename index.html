@@ -163,10 +163,13 @@
             transition: 0.2s;
             margin-top: 8px;
         }
+        .submit-btn.loading {
+            background: #8ba0bc;
+            cursor: not-allowed;
+        }
         .submit-btn:active {
             transform: scale(0.98);
         }
-        /* 弹窗表格样式 - 修复对齐问题 */
         .modal {
             display: none;
             position: fixed;
@@ -346,7 +349,7 @@
             <button class="close-btn" id="closeModalBtn">&times;</button>
         </div>
         <div class="table-wrapper" id="modalTableWrapper">
-            <!-- 表格会动态生成 -->
+            <div style="text-align:center; padding:20px;">加载中...</div>
         </div>
     </div>
 </div>
@@ -381,15 +384,26 @@
     let submittedData = {};
     let currentSubject = "语文";
     let currentInputs = {};
+    let issuesCache = null;  // 缓存 Issues 列表，避免重复查询
+    let isLoading = false;   // 防止重复提交
 
-    async function loadSubmittedData() {
+    // 获取所有 Issues（缓存）
+    async function fetchAllIssues(forceRefresh = false) {
+        if (issuesCache && !forceRefresh) return issuesCache;
+        const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues?labels=yuejuan&state=all&per_page=100`;
+        const response = await fetch(url, {
+            headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const issues = await response.json();
+        issuesCache = issues;
+        return issues;
+    }
+
+    // 加载已提交数据
+    async function loadSubmittedData(forceRefresh = false) {
         try {
-            const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues?labels=yuejuan&state=all&per_page=100`;
-            const response = await fetch(url, {
-                headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
-            });
-            if (!response.ok) return;
-            const issues = await response.json();
+            const issues = await fetchAllIssues(forceRefresh);
             const newData = {};
             for (let issue of issues) {
                 try {
@@ -401,9 +415,11 @@
             }
             submittedData = newData;
             refreshCurrentDisplay();
+            return submittedData;
         } catch (err) {
-            console.error(err);
+            console.error("加载失败:", err);
             refreshCurrentDisplay();
+            return submittedData;
         }
     }
 
@@ -470,13 +486,19 @@
             });
         });
 
-        document.getElementById('currentSubjectTitle').innerText = 
-            currentSubject === "文综" ? "文综组 (历史/地理/政治)" :
-            currentSubject === "理综" ? "理综组 (物理/化学/生物)" :
-            `${currentSubject}组`;
+        let titleText = `${currentSubject}组`;
+        if (currentSubject === "文综") titleText = "文综组 (历史/地理/政治)";
+        if (currentSubject === "理综") titleText = "理综组 (物理/化学/生物)";
+        document.getElementById('currentSubjectTitle').innerText = titleText;
     }
 
+    // 批量提交（并发）
     async function submitCurrentGroup() {
+        if (isLoading) {
+            showToast('正在提交中，请稍候...');
+            return;
+        }
+        
         const subjects = groupSubjects[currentSubject];
         const toSubmit = [];
 
@@ -497,41 +519,59 @@
             return;
         }
 
+        isLoading = true;
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.classList.add('loading');
+        submitBtn.innerText = '⏳ 提交中...';
+        
         showToast(`正在提交 ${toSubmit.length} 项...`);
 
-        let successCount = 0;
-        for (let item of toSubmit) {
-            const success = await submitOne(item.grade, item.subject, item.assignment);
-            if (success) successCount++;
-        }
-
-        if (successCount === toSubmit.length) {
-            showToast(`✅ 提交成功！共 ${toSubmit.length} 项`);
-            await loadSubmittedData();
-        } else {
-            showToast(`⚠️ 提交完成：成功 ${successCount}/${toSubmit.length} 项`);
-        }
-    }
-
-    async function submitOne(grade, subject, assignment) {
-        let issueNumber = null;
-        const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues?labels=yuejuan&state=all&per_page=100`;
-        const response = await fetch(url, {
-            headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
-        });
-        if (response.ok) {
-            const issues = await response.json();
+        try {
+            // 先获取最新的 Issues 列表
+            const issues = await fetchAllIssues(true);
+            
+            // 构建映射：grade|subject -> issue_number
+            const issueMap = {};
             for (let issue of issues) {
                 try {
                     const data = JSON.parse(issue.body);
-                    if (data.grade === grade && data.subject === subject) {
-                        issueNumber = issue.number;
-                        break;
+                    if (data.grade && data.subject) {
+                        issueMap[`${data.grade}|${data.subject}`] = issue.number;
                     }
                 } catch(e) {}
             }
+            
+            // 并发提交所有数据
+            const promises = toSubmit.map(item => {
+                const key = `${item.grade}|${item.subject}`;
+                const issueNumber = issueMap[key];
+                return submitOne(item.grade, item.subject, item.assignment, issueNumber);
+            });
+            
+            const results = await Promise.all(promises);
+            const successCount = results.filter(r => r === true).length;
+            
+            if (successCount === toSubmit.length) {
+                showToast(`✅ 提交成功！共 ${toSubmit.length} 项`);
+                // 清空缓存，强制刷新数据
+                issuesCache = null;
+                await loadSubmittedData(true);
+            } else {
+                showToast(`⚠️ 提交完成：成功 ${successCount}/${toSubmit.length} 项`);
+                issuesCache = null;
+                await loadSubmittedData(true);
+            }
+        } catch (err) {
+            console.error('提交失败:', err);
+            showToast('❌ 提交失败，请重试');
+        } finally {
+            isLoading = false;
+            submitBtn.classList.remove('loading');
+            submitBtn.innerText = '✅ 提交当前学科组';
         }
+    }
 
+    async function submitOne(grade, subject, assignment, issueNumber) {
         const body = JSON.stringify({ grade, subject, assignment, updatedAt: new Date().toISOString() });
         
         if (issueNumber) {
@@ -560,25 +600,30 @@
         }
     }
 
-    function showStatusModal() {
+    async function showStatusModal() {
+        document.getElementById('modalTableWrapper').innerHTML = '<div style="text-align:center; padding:20px;">加载中...</div>';
+        document.getElementById('statusModal').style.display = 'flex';
+        
+        await loadSubmittedData(true);
+        
         let html = `<table class="status-table"><thead><tr><th>年级</th>`;
         for (let sub of allSubjects) {
             html += `<th>${sub}</th>`;
         }
-        html += `</tr></thead><tbody>`;
+        html += `</table></thead><tbody>`;
         
         for (let grade of grades) {
-            html += `<tr><td>${grade}</td>`;
+            html += `<tr><td style="font-weight:600;">${grade}<table>`;
             for (let sub of allSubjects) {
                 if (!hasSubject(grade, sub)) {
                     html += `<td class="no-subject">—</td>`;
                 } else {
                     const key = `${grade}|${sub}`;
                     const assignment = submittedData[key];
-                    if (assignment) {
-                        html += `<td><span class="submitted-badge" title="${escapeHtml(assignment)}">已提交</span></td>`;
+                    if (assignment && assignment.trim() !== "") {
+                        html += `<td><span class="submitted-badge" title="${escapeHtml(assignment)}">✅ 已提交</span></td>`;
                     } else {
-                        html += `<td><span class="not-submitted-badge">未提交</span></td>`;
+                        html += `<td><span class="not-submitted-badge">⭘ 未提交</span></td>`;
                     }
                 }
             }
@@ -587,10 +632,13 @@
         html += `</tbody></table>`;
         
         document.getElementById('modalTableWrapper').innerHTML = html;
-        document.getElementById('statusModal').style.display = 'flex';
     }
 
     function switchSubject(subject) {
+        if (isLoading) {
+            showToast('请等待当前提交完成');
+            return;
+        }
         currentSubject = subject;
         document.querySelectorAll('.subject-btn').forEach(btn => {
             if (btn.dataset.subject === subject) {
@@ -603,6 +651,7 @@
     }
 
     function closeModal() { document.getElementById('statusModal').style.display = 'none'; }
+    
     function showToast(msg) {
         const toast = document.createElement('div');
         toast.className = 'toast';
@@ -610,7 +659,11 @@
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2000);
     }
-    function escapeHtml(str) { return (str || '').replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+    
+    function escapeHtml(str) { 
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
+    }
 
     document.getElementById('submitBtn').onclick = submitCurrentGroup;
     document.getElementById('viewStatusBtn').onclick = showStatusModal;
