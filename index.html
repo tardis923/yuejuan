@@ -13,21 +13,21 @@
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #f5f7fb;
+            background: #f0f4f9;
             padding: 16px;
             padding-bottom: 40px;
             color: #1e293b;
         }
         .container {
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto;
         }
-        .card {
+        .header-card {
             background: white;
             border-radius: 28px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
             padding: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
         }
         h1 {
             font-size: 1.5rem;
@@ -36,22 +36,21 @@
             margin-bottom: 4px;
         }
         .sub {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #5b6e8c;
             border-left: 3px solid #2c7da0;
-            padding-left: 12px;
+            padding-left: 10px;
             margin-top: 6px;
         }
-        /* 学科组按钮行 */
         .subject-buttons {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 20px;
+            margin: 16px 0 8px;
         }
         .subject-btn {
             flex: 1;
-            min-width: 70px;
+            min-width: 65px;
             background: #eef3fc;
             color: #2c5a7a;
             border: none;
@@ -60,7 +59,7 @@
             font-weight: 600;
             font-size: 0.85rem;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s;
             text-align: center;
         }
         .subject-btn.active {
@@ -71,39 +70,74 @@
         .subject-btn:active {
             transform: scale(0.96);
         }
-        /* 年级科目列表 */
-        .grade-list {
-            margin-top: 8px;
+        .fill-card {
+            background: white;
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
         }
-        .grade-item {
-            background: #fafcff;
-            border-radius: 20px;
-            padding: 12px 16px;
-            margin-bottom: 12px;
-            border: 1px solid #e9edf2;
+        .fill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e9edf2;
         }
-        .grade-title {
-            font-weight: 600;
+        .fill-header h3 {
+            font-size: 1.1rem;
             color: #0f3b5c;
-            margin-bottom: 10px;
+        }
+        .view-status-btn {
+            background: #5b8cae;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+        .subject-section {
+            margin-bottom: 24px;
+        }
+        .section-title {
+            font-weight: 600;
+            color: #2c7da0;
+            margin-bottom: 12px;
+            padding-left: 8px;
+            border-left: 3px solid #2c7da0;
             font-size: 0.9rem;
+        }
+        .grade-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .grade-row {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
-        .grade-tag {
-            background: #eef3fc;
-            padding: 4px 12px;
+        .grade-label {
+            width: 90px;
+            font-weight: 500;
+            color: #0f3b5c;
+            font-size: 0.9rem;
+            background: #f5f7fb;
+            padding: 8px 0;
             border-radius: 20px;
-            font-size: 0.7rem;
-            color: #2c5a7a;
+            text-align: center;
         }
         .assignment-input {
-            width: 100%;
+            flex: 1;
+            min-width: 180px;
             padding: 12px 14px;
             font-size: 0.9rem;
             border: 1px solid #dce3ec;
-            border-radius: 16px;
+            border-radius: 24px;
             background: white;
             font-family: inherit;
         }
@@ -116,7 +150,7 @@
             background: #e8f5e9;
             border-color: #8bc34a;
         }
-        button {
+        .submit-btn {
             background: #2c7da0;
             color: white;
             border: none;
@@ -127,25 +161,12 @@
             cursor: pointer;
             width: 100%;
             transition: 0.2s;
+            margin-top: 8px;
         }
-        button:active {
+        .submit-btn:active {
             transform: scale(0.98);
         }
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            z-index: 1100;
-            white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        /* 弹窗表格 */
+        /* 弹窗表格样式 - 修复对齐问题 */
         .modal {
             display: none;
             position: fixed;
@@ -161,19 +182,25 @@
         .modal-content {
             background: white;
             border-radius: 32px;
-            width: 90%;
-            max-width: 550px;
-            max-height: 80%;
-            overflow: auto;
-            padding: 20px;
+            width: 95%;
+            max-width: 700px;
+            max-height: 85%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
         }
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
+            padding: 16px 20px;
             border-bottom: 1px solid #e9edf2;
+            flex-shrink: 0;
+        }
+        .modal-header h3 {
+            font-size: 1rem;
+            color: #0f3b5c;
         }
         .close-btn {
             background: none;
@@ -183,16 +210,46 @@
             color: #8ba0bc;
             width: auto;
             padding: 0;
+            line-height: 1;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            overflow-y: auto;
+            flex: 1;
+            padding: 16px 20px 20px;
         }
         .status-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
+            min-width: 500px;
         }
-        .status-table th, .status-table td {
-            padding: 8px 4px;
-            border-bottom: 1px solid #e9edf2;
+        .status-table th,
+        .status-table td {
+            padding: 10px 6px;
             text-align: center;
+            border-bottom: 1px solid #edf2f7;
+            vertical-align: middle;
+        }
+        .status-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #2c5a7a;
+            position: sticky;
+            top: 0;
+            white-space: nowrap;
+        }
+        .status-table td:first-child,
+        .status-table th:first-child {
+            position: sticky;
+            left: 0;
+            background: white;
+            font-weight: 600;
+            color: #0f3b5c;
+        }
+        .status-table th:first-child {
+            background: #f8fafc;
+            z-index: 1;
         }
         .submitted-badge {
             background: #e6f7e6;
@@ -201,6 +258,8 @@
             padding: 4px 10px;
             display: inline-block;
             font-size: 0.7rem;
+            font-weight: 500;
+            white-space: nowrap;
         }
         .not-submitted-badge {
             background: #fff0e6;
@@ -209,24 +268,58 @@
             padding: 4px 10px;
             display: inline-block;
             font-size: 0.7rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .no-subject {
+            color: #cbd5e1;
+            font-size: 0.8rem;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            z-index: 1100;
+            white-space: nowrap;
         }
         @media (max-width: 480px) {
+            .grade-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .grade-label {
+                width: 100%;
+                text-align: left;
+                padding: 6px 0;
+                background: none;
+            }
+            .assignment-input {
+                width: 100%;
+            }
             .subject-btn {
-                font-size: 0.75rem;
+                font-size: 0.7rem;
                 padding: 10px 0;
+            }
+            .status-table th,
+            .status-table td {
+                padding: 8px 4px;
+                font-size: 0.65rem;
             }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="card">
+    <div class="header-card">
         <h1>📋 阅卷分配</h1>
-        <div class="sub">点击学科组按钮，填写各年级分配情况</div>
-    </div>
-
-    <!-- 学科组按钮 -->
-    <div class="card">
+        <div class="sub">点击学科组 → 填写各年级分配情况 → 提交</div>
         <div class="subject-buttons" id="subjectButtons">
             <button class="subject-btn" data-subject="语文">语文组</button>
             <button class="subject-btn" data-subject="数学">数学组</button>
@@ -236,56 +329,59 @@
         </div>
     </div>
 
-    <!-- 当前学科组填写区域 -->
-    <div class="card" id="fillCard">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h3 style="font-size: 1rem;" id="currentSubjectTitle">语文组</h3>
-            <button id="viewStatusBtn" style="width: auto; padding: 6px 14px; font-size: 0.7rem; background: #5b8cae;">查看全部状态</button>
+    <div class="fill-card">
+        <div class="fill-header">
+            <h3 id="currentSubjectTitle">语文组</h3>
+            <button class="view-status-btn" id="viewStatusBtn">📊 查看全部状态</button>
         </div>
-        <div id="gradeListContainer" class="grade-list">
-            <!-- 动态生成各年级的输入框 -->
-        </div>
-        <button id="submitBtn">📤 提交当前学科组</button>
+        <div id="gradeListContainer"></div>
+        <button class="submit-btn" id="submitBtn">✅ 提交当前学科组</button>
     </div>
 </div>
 
-<!-- 全局状态弹窗 -->
 <div id="statusModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>📊 全部科目提交状态</h3>
+            <h3>📊 全部科目提交状态一览表</h3>
             <button class="close-btn" id="closeModalBtn">&times;</button>
         </div>
-        <div id="modalTableContent"></div>
+        <div class="table-wrapper" id="modalTableWrapper">
+            <!-- 表格会动态生成 -->
+        </div>
     </div>
 </div>
 
 <script>
-    // ==================== 配置 ====================
+    // ==================== GitHub 配置 ====================
     const GITHUB_TOKEN = "GITHUB_TOKEN_PLACEHOLDER";
     const GITHUB_USER = "tardis923";
     const GITHUB_REPO = "yuejuan";
-    // ============================================
+    // ===================================================
 
-    // 年级列表
-    const grades = ["七年级", "八年级", "九年级", "高一", "高二", "高三"];
-
-    // 学科组对应的科目名称
-    const subjectMapping = {
-        "语文": "语文",
-        "数学": "数学",
-        "英语": "英语",
-        "文综": "文综",   // 文综组填写的是"文综"
-        "理综": "理综"    // 理综组填写的是"理综"
+    const gradeSubjects = {
+        "初一": ["语文", "数学", "英语", "政治", "历史", "地理", "生物"],
+        "初二": ["语文", "数学", "英语", "物理", "政治", "历史", "地理", "生物"],
+        "初三": ["语文", "数学", "英语", "物理", "化学", "政治", "历史"],
+        "高一": ["语文", "数学", "英语", "物理", "化学", "生物", "历史", "地理", "政治"],
+        "高二": ["语文", "数学", "英语", "物理", "化学", "生物", "历史", "地理", "政治"],
+        "高三": ["语文", "数学", "英语", "物理", "化学", "生物", "历史", "地理", "政治"]
     };
 
-    // 存储所有已提交的数据 { "七年级|语文": "已分配给张老师", ... }
+    const groupSubjects = {
+        "语文": ["语文"],
+        "数学": ["数学"],
+        "英语": ["英语"],
+        "文综": ["历史", "地理", "政治"],
+        "理综": ["物理", "化学", "生物"]
+    };
+
+    const grades = ["初一", "初二", "初三", "高一", "高二", "高三"];
+    const allSubjects = ["语文", "数学", "英语", "历史", "地理", "政治", "物理", "化学", "生物"];
+
     let submittedData = {};
+    let currentSubject = "语文";
+    let currentInputs = {};
 
-    let currentSubject = "语文";  // 当前选中的学科组
-    let currentInputs = {};       // 当前页面的输入值 { "七年级": "xxx", ... }
-
-    // 加载所有已提交数据
     async function loadSubmittedData() {
         try {
             const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues?labels=yuejuan&state=all&per_page=100`;
@@ -299,49 +395,73 @@
                 try {
                     const data = JSON.parse(issue.body);
                     if (data.grade && data.subject && data.assignment !== undefined) {
-                        const key = `${data.grade}|${data.subject}`;
-                        newData[key] = data.assignment;
+                        newData[`${data.grade}|${data.subject}`] = data.assignment;
                     }
                 } catch(e) {}
             }
             submittedData = newData;
-            // 刷新当前学科组的显示
-            refreshCurrentSubjectDisplay();
+            refreshCurrentDisplay();
         } catch (err) {
-            console.error("加载失败:", err);
+            console.error(err);
+            refreshCurrentDisplay();
         }
     }
 
-    // 刷新当前学科组的输入框（根据已提交数据回显）
-    function refreshCurrentSubjectDisplay() {
+    function hasSubject(grade, subject) {
+        return gradeSubjects[grade] && gradeSubjects[grade].includes(subject);
+    }
+
+    function refreshCurrentDisplay() {
         const container = document.getElementById('gradeListContainer');
-        const subjectName = subjectMapping[currentSubject];
+        const subjects = groupSubjects[currentSubject];
         if (!container) return;
 
-        let html = '';
-        for (let grade of grades) {
-            const key = `${grade}|${subjectName}`;
-            const savedValue = submittedData[key] || '';
-            // 更新 currentInputs 缓存
-            currentInputs[grade] = savedValue;
-            const hasValueClass = savedValue ? 'has-value' : '';
-            html += `
-                <div class="grade-item">
-                    <div class="grade-title">
-                        <span class="grade-tag">${grade}</span>
-                        <span style="font-size:0.7rem; color:#8ba0bc;">${subjectName}科</span>
+        if (currentSubject === "语文" || currentSubject === "数学" || currentSubject === "英语") {
+            const subject = subjects[0];
+            let html = `<div class="grade-list">`;
+            for (let grade of grades) {
+                if (!hasSubject(grade, subject)) continue;
+                const key = `${grade}|${subject}`;
+                const savedValue = submittedData[key] || '';
+                currentInputs[key] = savedValue;
+                const hasValueClass = savedValue ? 'has-value' : '';
+                html += `
+                    <div class="grade-row">
+                        <div class="grade-label">${grade} ${subject}</div>
+                        <input type="text" class="assignment-input ${hasValueClass}" data-grade="${grade}" data-subject="${subject}" placeholder="例：已分配给张老师" value="${escapeHtml(savedValue)}">
                     </div>
-                    <input type="text" class="assignment-input ${hasValueClass}" data-grade="${grade}" placeholder="例：已分配给张老师 / 待定" value="${escapeHtml(savedValue)}">
-                </div>
-            `;
+                `;
+            }
+            html += `</div>`;
+            container.innerHTML = html;
+        } else {
+            let html = '';
+            for (let subject of subjects) {
+                html += `<div class="subject-section"><div class="section-title">📖 ${subject}</div><div class="grade-list">`;
+                for (let grade of grades) {
+                    if (!hasSubject(grade, subject)) continue;
+                    const key = `${grade}|${subject}`;
+                    const savedValue = submittedData[key] || '';
+                    currentInputs[key] = savedValue;
+                    const hasValueClass = savedValue ? 'has-value' : '';
+                    html += `
+                        <div class="grade-row">
+                            <div class="grade-label">${grade}</div>
+                            <input type="text" class="assignment-input ${hasValueClass}" data-grade="${grade}" data-subject="${subject}" placeholder="例：已分配给张老师" value="${escapeHtml(savedValue)}">
+                        </div>
+                    `;
+                }
+                html += `</div></div>`;
+            }
+            container.innerHTML = html;
         }
-        container.innerHTML = html;
 
-        // 绑定输入事件
         document.querySelectorAll('.assignment-input').forEach(input => {
             input.addEventListener('input', (e) => {
                 const grade = e.target.dataset.grade;
-                currentInputs[grade] = e.target.value;
+                const subject = e.target.dataset.subject;
+                const key = `${grade}|${subject}`;
+                currentInputs[key] = e.target.value;
                 if (e.target.value) {
                     e.target.classList.add('has-value');
                 } else {
@@ -350,22 +470,25 @@
             });
         });
 
-        document.getElementById('currentSubjectTitle').innerText = `${currentSubject}组`;
+        document.getElementById('currentSubjectTitle').innerText = 
+            currentSubject === "文综" ? "文综组 (历史/地理/政治)" :
+            currentSubject === "理综" ? "理综组 (物理/化学/生物)" :
+            `${currentSubject}组`;
     }
 
-    // 提交当前学科组（只提交有变化的内容）
     async function submitCurrentGroup() {
-        const subjectName = subjectMapping[currentSubject];
+        const subjects = groupSubjects[currentSubject];
         const toSubmit = [];
 
-        for (let grade of grades) {
-            const newValue = currentInputs[grade] || '';
-            const key = `${grade}|${subjectName}`;
-            const oldValue = submittedData[key] || '';
-            
-            // 只有值发生变化时才提交
-            if (newValue !== oldValue) {
-                toSubmit.push({ grade, subject: subjectName, assignment: newValue });
+        for (let subject of subjects) {
+            for (let grade of grades) {
+                if (!hasSubject(grade, subject)) continue;
+                const key = `${grade}|${subject}`;
+                const newValue = currentInputs[key] || '';
+                const oldValue = submittedData[key] || '';
+                if (newValue !== oldValue) {
+                    toSubmit.push({ grade, subject, assignment: newValue });
+                }
             }
         }
 
@@ -384,17 +507,13 @@
 
         if (successCount === toSubmit.length) {
             showToast(`✅ 提交成功！共 ${toSubmit.length} 项`);
-            await loadSubmittedData();  // 重新加载，刷新全局状态
+            await loadSubmittedData();
         } else {
             showToast(`⚠️ 提交完成：成功 ${successCount}/${toSubmit.length} 项`);
         }
     }
 
-    // 提交单条数据（创建或更新 Issue）
     async function submitOne(grade, subject, assignment) {
-        const key = `${grade}|${subject}`;
-        
-        // 查找是否已存在 Issue
         let issueNumber = null;
         const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues?labels=yuejuan&state=all&per_page=100`;
         const response = await fetch(url, {
@@ -416,7 +535,6 @@
         const body = JSON.stringify({ grade, subject, assignment, updatedAt: new Date().toISOString() });
         
         if (issueNumber) {
-            // 更新现有 Issue
             const updateResp = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues/${issueNumber}`, {
                 method: 'PATCH',
                 headers: {
@@ -428,7 +546,6 @@
             });
             return updateResp.ok;
         } else {
-            // 创建新 Issue
             const title = `${grade}·${subject}`;
             const createResp = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues`, {
                 method: 'POST',
@@ -443,10 +560,38 @@
         }
     }
 
-    // 切换学科组
+    function showStatusModal() {
+        let html = `<table class="status-table"><thead><tr><th>年级</th>`;
+        for (let sub of allSubjects) {
+            html += `<th>${sub}</th>`;
+        }
+        html += `</tr></thead><tbody>`;
+        
+        for (let grade of grades) {
+            html += `<tr><td>${grade}</td>`;
+            for (let sub of allSubjects) {
+                if (!hasSubject(grade, sub)) {
+                    html += `<td class="no-subject">—</td>`;
+                } else {
+                    const key = `${grade}|${sub}`;
+                    const assignment = submittedData[key];
+                    if (assignment) {
+                        html += `<td><span class="submitted-badge" title="${escapeHtml(assignment)}">已提交</span></td>`;
+                    } else {
+                        html += `<td><span class="not-submitted-badge">未提交</span></td>`;
+                    }
+                }
+            }
+            html += `</tr>`;
+        }
+        html += `</tbody></table>`;
+        
+        document.getElementById('modalTableWrapper').innerHTML = html;
+        document.getElementById('statusModal').style.display = 'flex';
+    }
+
     function switchSubject(subject) {
         currentSubject = subject;
-        // 更新按钮样式
         document.querySelectorAll('.subject-btn').forEach(btn => {
             if (btn.dataset.subject === subject) {
                 btn.classList.add('active');
@@ -454,73 +599,28 @@
                 btn.classList.remove('active');
             }
         });
-        refreshCurrentSubjectDisplay();
+        refreshCurrentDisplay();
     }
 
-    // 显示全局状态弹窗（表格）
-    function showStatusModal() {
-        const gradesList = grades;
-        const subjects = ["语文", "数学", "英语", "文综", "理综"];
-        
-        let html = `<table class="status-table"><thead><tr><th>年级</th>`;
-        for (let sub of subjects) {
-            html += `<th>${sub}</th>`;
-        }
-        html += `</tr></thead><tbody>`;
-        
-        for (let grade of gradesList) {
-            html += `<tr><td style="font-weight:600;">${grade}</td>`;
-            for (let sub of subjects) {
-                const key = `${grade}|${sub}`;
-                const assignment = submittedData[key];
-                const statusClass = assignment ? 'submitted-badge' : 'not-submitted-badge';
-                const statusText = assignment ? '已提交' : '未提交';
-                html += `<td><span class="${statusClass}">${statusText}</span></td>`;
-            }
-            html += `</tr>`;
-        }
-        html += `</tbody></table>`;
-        
-        document.getElementById('modalTableContent').innerHTML = html;
-        document.getElementById('statusModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-        document.getElementById('statusModal').style.display = 'none';
-    }
-
-    function showToast(message) {
+    function closeModal() { document.getElementById('statusModal').style.display = 'none'; }
+    function showToast(msg) {
         const toast = document.createElement('div');
         toast.className = 'toast';
-        toast.innerText = message;
+        toast.innerText = msg;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2000);
     }
+    function escapeHtml(str) { return (str || '').replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
 
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
-    }
-
-    // 事件绑定
-    document.getElementById('submitBtn').addEventListener('click', submitCurrentGroup);
-    document.getElementById('viewStatusBtn').addEventListener('click', showStatusModal);
-    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-    window.addEventListener('click', (e) => {
-        if (e.target === document.getElementById('statusModal')) closeModal();
-    });
-
-    // 绑定学科组按钮
+    document.getElementById('submitBtn').onclick = submitCurrentGroup;
+    document.getElementById('viewStatusBtn').onclick = showStatusModal;
+    document.getElementById('closeModalBtn').onclick = closeModal;
+    window.onclick = (e) => { if (e.target === document.getElementById('statusModal')) closeModal(); };
     document.querySelectorAll('.subject-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            switchSubject(btn.dataset.subject);
-        });
+        btn.onclick = () => switchSubject(btn.dataset.subject);
     });
 
-    // 启动
-    loadSubmittedData().then(() => {
-        switchSubject('语文');
-    });
+    loadSubmittedData().then(() => switchSubject('语文'));
 </script>
 </body>
 </html>
