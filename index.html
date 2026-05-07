@@ -384,10 +384,9 @@
     let submittedData = {};
     let currentSubject = "语文";
     let currentInputs = {};
-    let issuesCache = null;  // 缓存 Issues 列表，避免重复查询
-    let isLoading = false;   // 防止重复提交
+    let issuesCache = null;
+    let isLoading = false;
 
-    // 获取所有 Issues（缓存）
     async function fetchAllIssues(forceRefresh = false) {
         if (issuesCache && !forceRefresh) return issuesCache;
         const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues?labels=yuejuan&state=all&per_page=100`;
@@ -400,7 +399,6 @@
         return issues;
     }
 
-    // 加载已提交数据
     async function loadSubmittedData(forceRefresh = false) {
         try {
             const issues = await fetchAllIssues(forceRefresh);
@@ -492,7 +490,6 @@
         document.getElementById('currentSubjectTitle').innerText = titleText;
     }
 
-    // 批量提交（并发）
     async function submitCurrentGroup() {
         if (isLoading) {
             showToast('正在提交中，请稍候...');
@@ -527,10 +524,7 @@
         showToast(`正在提交 ${toSubmit.length} 项...`);
 
         try {
-            // 先获取最新的 Issues 列表
             const issues = await fetchAllIssues(true);
-            
-            // 构建映射：grade|subject -> issue_number
             const issueMap = {};
             for (let issue of issues) {
                 try {
@@ -541,7 +535,6 @@
                 } catch(e) {}
             }
             
-            // 并发提交所有数据
             const promises = toSubmit.map(item => {
                 const key = `${item.grade}|${item.subject}`;
                 const issueNumber = issueMap[key];
@@ -553,7 +546,6 @@
             
             if (successCount === toSubmit.length) {
                 showToast(`✅ 提交成功！共 ${toSubmit.length} 项`);
-                // 清空缓存，强制刷新数据
                 issuesCache = null;
                 await loadSubmittedData(true);
             } else {
@@ -600,38 +592,58 @@
         }
     }
 
-    async function showStatusModal() {
-        document.getElementById('modalTableWrapper').innerHTML = '<div style="text-align:center; padding:20px;">加载中...</div>';
-        document.getElementById('statusModal').style.display = 'flex';
+    // 独立渲染弹窗表格，不依赖页面刷新
+    async function renderStatusTable() {
+        // 先显示加载中
+        const wrapper = document.getElementById('modalTableWrapper');
+        wrapper.innerHTML = '<div style="text-align:center; padding:20px;">加载中...</div>';
         
-        await loadSubmittedData(true);
-        
-        let html = `<table class="status-table"><thead><tr><th>年级</th>`;
-        for (let sub of allSubjects) {
-            html += `<th>${sub}</th>`;
-        }
-        html += `</table></thead><tbody>`;
-        
-        for (let grade of grades) {
-            html += `<tr><td style="font-weight:600;">${grade}<table>`;
+        // 重新获取最新数据（不影响主页面的显示）
+        try {
+            const issues = await fetchAllIssues(true);
+            const tempData = {};
+            for (let issue of issues) {
+                try {
+                    const data = JSON.parse(issue.body);
+                    if (data.grade && data.subject && data.assignment !== undefined) {
+                        tempData[`${data.grade}|${data.subject}`] = data.assignment;
+                    }
+                } catch(e) {}
+            }
+            
+            let html = `<table class="status-table"><thead><tr><th>年级</th>`;
             for (let sub of allSubjects) {
-                if (!hasSubject(grade, sub)) {
-                    html += `<td class="no-subject">—</td>`;
-                } else {
-                    const key = `${grade}|${sub}`;
-                    const assignment = submittedData[key];
-                    if (assignment && assignment.trim() !== "") {
-                        html += `<td><span class="submitted-badge" title="${escapeHtml(assignment)}">✅ 已提交</span></td>`;
+                html += `<th>${sub}</th>`;
+            }
+            html += `</tr></thead><tbody>`;
+            
+            for (let grade of grades) {
+                html += `<tr><td style="font-weight:600;">${grade}</td>`;
+                for (let sub of allSubjects) {
+                    if (!hasSubject(grade, sub)) {
+                        html += `<td class="no-subject">—</td>`;
                     } else {
-                        html += `<td><span class="not-submitted-badge">⭘ 未提交</span></td>`;
+                        const key = `${grade}|${sub}`;
+                        const assignment = tempData[key];
+                        if (assignment && assignment.trim() !== "") {
+                            html += `<td><span class="submitted-badge" title="${escapeHtml(assignment)}">✅ 已提交</span></td>`;
+                        } else {
+                            html += `<td><span class="not-submitted-badge">⭘ 未提交</span></td>`;
+                        }
                     }
                 }
+                html += `</tr>`;
             }
-            html += `</tr>`;
+            html += `</tbody></table>`;
+            wrapper.innerHTML = html;
+        } catch (err) {
+            wrapper.innerHTML = '<div style="text-align:center; padding:20px; color:#bc3900;">加载失败，请重试</div>';
         }
-        html += `</tbody></table>`;
-        
-        document.getElementById('modalTableWrapper').innerHTML = html;
+    }
+
+    async function showStatusModal() {
+        document.getElementById('statusModal').style.display = 'flex';
+        await renderStatusTable();
     }
 
     function switchSubject(subject) {
@@ -650,7 +662,9 @@
         refreshCurrentDisplay();
     }
 
-    function closeModal() { document.getElementById('statusModal').style.display = 'none'; }
+    function closeModal() { 
+        document.getElementById('statusModal').style.display = 'none'; 
+    }
     
     function showToast(msg) {
         const toast = document.createElement('div');
